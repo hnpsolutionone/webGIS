@@ -48,47 +48,28 @@
                 layers: "ign:infos_map_view",
                 format: 'image/png',
                 opacity: 0.4,
-                info_format: 'application/json',
+                info_format: 'application/json', // Return with JSON format
                 transparent: true
             });
 
-            /*var lyrRegion= L.tileLayer.betterWms(url, {
-                layers: 'ign:fr-region',
-                format: 'image/png',
-                transparent: true
-            });
+            // Make makers by Json
+            var myIcon = L.icon({
+                iconUrl: 'images/pin24.png',
+                iconRetinaUrl: 'images/pin48.png',
+                iconSize: [29, 24],
+                iconAnchor: [9, 21],
+                popupAnchor: [0, -14]
+            })
 
-            var lyrDepartement = L.tileLayer.betterWms(url, {
-                layers: "ign:fr-departement",
-                format: 'image/png',
-                transparent: true
-            });
-
-            var lyrChef = L.tileLayer.betterWms(url, {
-                layers: "ign:fr-chef_lieu",
-                format: 'image/png',
-                transparent: true
-            });
-
-            var lyrArrondissement = L.tileLayer.betterWms(url, {
-                layers: "ign:fr-arrondissement",
-                format: 'image/png',
-                transparent: true
-            });
-
-            var lyrEpci = L.tileLayer.betterWms(url, {
-                layers: "ign:fr-epci",
-                format: 'image/png',
-                transparent: true
-            });*/
+            for ( var i=0; i < markers.length; ++i )
+            {
+                L.marker( [markers[i].lat, markers[i].lng], {icon: myIcon} )
+                    .bindPopup( '<a href="' + markers[i].url + '" target="_blank">' + markers[i].name + '</a>' )
+                    .addTo( map );
+            }
 
             map.addLayer(lyrOSM);
             map.addLayer(lyrCommune);
-            /*map.addLayer(lyrRegion);
-            map.addLayer(lyrDepartement);
-            map.addLayer(lyrChef);
-            map.addLayer(lyrArrondissement);
-            map.addLayer(lyrEpci);*/
 
             var layerSwitcher = L.geoportalControl.LayerSwitcher({
                 layers : [{
@@ -111,23 +92,7 @@
             var mpCtrl = L.geoportalControl.MousePosition({});
             map.addControl(mpCtrl);
 
-            /*// Search Bar
-            {
-              position : "topright",
-              collapsed : true,
-              zoomTo : "auto",
-              displayInfo : true,
-              displayAdvancedSearch : true,
-              resources : ["PositionOfInterest", "StreetAddress"],
-              advancedSearch : {
-                  PositionOfInterest : [{name : "municipality", title : "Ville"}],
-                  StreetAddress : [{...}],
-                  CadastralParcel : null,
-              },
-              apiKey : "zfgzrgffg57rfg8ar7gr4g5r4",
-              geocodeOptions : {},
-              autocompleteOptions : {}
-            }*/
+            // Search Bar
             var searchCtrl = L.geoportalControl.SearchEngine({zoomTo : "auto"});
             map.addControl(searchCtrl);
             // Router
@@ -145,6 +110,6 @@
 <body>
     <div id="map"></div>
     <div id="info"></div>
-
+    <script type='text/javascript' src='markers.json'></script>
 </body>
 </html>
