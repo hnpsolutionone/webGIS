@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Library Leaflet -->
+    <link rel="stylesheet" href="leaflet/leaflet.css" />
+    <script src="leaflet/leaflet.js"></script>
+
+    <!-- Extension Géoportail pour Leaflet -->
+    <script src="GpPluginLeaflet/GpPluginLeaflet.js"></script>
+    <link rel="stylesheet" href="GpPluginLeaflet/GpPluginLeaflet.css" />
+    <style>
+        #map {
+            padding: 5px;
+            width: 100%;
+            height: 600px;
+            box-shadow: 0 0 10px #999;
+        }
+
+        #info {
+            padding: 5px;
+            width: 100%;
+            height: 20px;
+            font-family: monospace;
+        }
+    </style>
+    <script>
+        function go() {
+            var map = L.map('map', {
+                crs: L.geoportalCRS.EPSG2154,
+            }).setView([48.845, 2.424], 8);
+            var lyr = L.geoportalLayer.WMTS({
+                layer: "ORTHOIMAGERY.ORTHOPHOTOS.BDORTHO.L93"
+            });
+            lyr.addTo(map); // ou map.addLayer(lyr);
+        }
+
+        Gp.Services.getConfig({
+            apiKey: "jhyvi0fgmnuxvfv0zjzorvdn",
+            onSuccess: go
+        });
+    </script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="info"></div>
+
+</body>
+</html>

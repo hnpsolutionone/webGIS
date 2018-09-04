@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head lang="fr">
+    <meta charset="UTF-8">
+    <title>Demo WebGIS</title>
+    <!-- Library Leaflet -->
+    <link rel="stylesheet" href="leaflet/leaflet.css" />
+    <script src="leaflet/leaflet.js"></script>
+
+    <!-- Extension Géoportail pour Leaflet -->
+    <script src="GpPluginLeaflet/GpPluginLeaflet.js"></script>
+    <link rel="stylesheet" href="GpPluginLeaflet/GpPluginLeaflet.css" />
+
+    <!-- TileLayer BetterWMS -->
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="L.TileLayer.BetterWMS.js"></script>
+
+    <!-- jsonQ - http://ignitersworld.com/lab/jsonQ.html -->
+    <script src="jsonQ.min.js"></script>
+    <style>
+        #map {
+            padding: 5px;
+            width: 100%;
+            height: 600px;
+            box-shadow: 0 0 10px #999;
+        }
+
+        #info {
+            padding: 5px;
+            width: 100%;
+            height: 20px;
+            font-family: monospace;
+        }
+    </style>
+    <script>
+        function go() {
+            map = L.map("map").setView([48.845, 2.424], 5);
+            // var lyrOSM= L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png') ;
+
+            var lyrOSM = L.geoportalLayer.WMTS({
+                layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
+            }, { // leafletParams
+                opacity: 0.7
+            });
+
+            var url = 'http://localhost:8080/geoserver/ign/wms';
+            var lyrCommune = L.tileLayer.betterWms(url, {
+                layers: "ign:infos_map_view",
+                format: 'image/png',
+                opacity: 0.4,
+                info_format: 'application/json',
+                transparent: true
+            });
+
+            /*var lyrRegion= L.tileLayer.betterWms(url, {
+                layers: 'ign:fr-region',
+                format: 'image/png',
+                transparent: true
+            });
+
+            var lyrDepartement = L.tileLayer.betterWms(url, {
+                layers: "ign:fr-departement",
+                format: 'image/png',
+                transparent: true
+            });
+
+            var lyrChef = L.tileLayer.betterWms(url, {
+                layers: "ign:fr-chef_lieu",
+                format: 'image/png',
+                transparent: true
+            });
+
+            var lyrArrondissement = L.tileLayer.betterWms(url, {
+                layers: "ign:fr-arrondissement",
+                format: 'image/png',
+                transparent: true
+            });
+
+            var lyrEpci = L.tileLayer.betterWms(url, {
+                layers: "ign:fr-epci",
+                format: 'image/png',
+                transparent: true
+            });*/
+
+            map.addLayer(lyrOSM);
+            map.addLayer(lyrCommune);
+            /*map.addLayer(lyrRegion);
+            map.addLayer(lyrDepartement);
+            map.addLayer(lyrChef);
+            map.addLayer(lyrArrondissement);
+            map.addLayer(lyrEpci);*/
+
+            var layerSwitcher = L.geoportalControl.LayerSwitcher({
+                layers : [{
+                    layer : lyrOSM,
+                    config : {
+                        title : "OSM",
+                        description : "Couche Open Street Maps"
+                    }
+                    },
+                    {
+                        layer : lyrCommune,
+                        config : {
+                            title : "Commune",
+                            description : "Commune on Open Street Maps"
+                        }
+                    }]
+            });
+            map.addControl(layerSwitcher);
+
+            var mpCtrl = L.geoportalControl.MousePosition({});
+            map.addControl(mpCtrl);
+
+            // Search
+            var searchCtrl = L.geoportalControl.SearchEngine({});
+            map.addControl(searchCtrl);
+            // Router
+            var routeCtrl = L.geoportalControl.Route({});
+            map.addControl(routeCtrl);
+        }
+
+        Gp.Services.getConfig({
+            apiKey : "jhyvi0fgmnuxvfv0zjzorvdn",
+            onSuccess : go
+        }) ;
+    </script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="info"></div>
+
+</body>
+</html>
