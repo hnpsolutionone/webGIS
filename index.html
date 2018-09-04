@@ -111,8 +111,24 @@
             var mpCtrl = L.geoportalControl.MousePosition({});
             map.addControl(mpCtrl);
 
-            // Search
-            var searchCtrl = L.geoportalControl.SearchEngine({});
+            /*// Search Bar
+            {
+              position : "topright",
+              collapsed : true,
+              zoomTo : "auto",
+              displayInfo : true,
+              displayAdvancedSearch : true,
+              resources : ["PositionOfInterest", "StreetAddress"],
+              advancedSearch : {
+                  PositionOfInterest : [{name : "municipality", title : "Ville"}],
+                  StreetAddress : [{...}],
+                  CadastralParcel : null,
+              },
+              apiKey : "zfgzrgffg57rfg8ar7gr4g5r4",
+              geocodeOptions : {},
+              autocompleteOptions : {}
+            }*/
+            var searchCtrl = L.geoportalControl.SearchEngine({zoomTo : "auto"});
             map.addControl(searchCtrl);
             // Router
             var routeCtrl = L.geoportalControl.Route({});
