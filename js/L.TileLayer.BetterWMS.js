@@ -71,6 +71,32 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 var doc = (new DOMParser()).parseFromString(content, "text/html");
                 if (doc.body.innerHTML.trim().length > 0)
                     showResults(err, evt.latlng, content);
+
+                // Call Ajax to get data when user click on commune
+                var insee_com  = jsonInfo.find('insee_code').value();
+
+                $.ajax({
+                    method: "GET",
+                    url:    "php/getrecords_ajax.php",
+                    data: { "insee_com": insee_com},
+                }).done(function( data ) {
+                    console.log(data);
+                    var markers = jQuery.parseJSON(data);
+                    console.log(markers);
+                    var myIcon = L.icon({
+                        iconUrl: 'images/pin24.png',
+                        iconRetinaUrl: 'images/pin48.png',
+                        iconSize: [29, 24],
+                        iconAnchor: [9, 21],
+                        popupAnchor: [0, -14]
+                    })
+                    for ( var i=0; i < markers.length; ++i )
+                    {
+                        L.marker( [markers[i].lat, markers[i].lng], {icon: myIcon} )
+                            .bindPopup( '<a href="' + markers[i].url + '" target="_blank">' + markers[i].name + '</a>' )
+                            .addTo( map );
+                    }
+                });
             },
             error: function (xhr, status, error) {
                 showResults(error);

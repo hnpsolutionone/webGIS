@@ -52,8 +52,16 @@
                 transparent: true
             });
 
+           /* var lyrChef = L.tileLayer.betterWms(url, {
+                layers: "ign:fr-chef_lieu",
+                format: 'image/png',
+                opacity: 0.5,
+                info_format: 'application/json', // Return with JSON format
+                transparent: true
+            });*/
+
             // Make makers by Json
-            var myIcon = L.icon({
+            /*var myIcon = L.icon({
                 iconUrl: 'images/pin24.png',
                 iconRetinaUrl: 'images/pin48.png',
                 iconSize: [29, 24],
@@ -66,10 +74,11 @@
                 L.marker( [markers[i].lat, markers[i].lng], {icon: myIcon} )
                     .bindPopup( '<a href="' + markers[i].url + '" target="_blank">' + markers[i].name + '</a>' )
                     .addTo( map );
-            }
+            }*/
 
             map.addLayer(lyrOSM);
             map.addLayer(lyrCommune);
+            //map.addLayer(lyrChef);
 
             var layerSwitcher = L.geoportalControl.LayerSwitcher({
                 layers : [{
@@ -110,6 +119,6 @@
 <body>
     <div id="map"></div>
     <div id="info"></div>
-    <script type='text/javascript' src='json/markers.json'></script>
+    <!--<script type='text/javascript' src='json/markers.json'></script>-->
 </body>
 </html>
