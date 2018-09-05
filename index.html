@@ -40,14 +40,14 @@
             var lyrOSM = L.geoportalLayer.WMTS({
                 layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
             }, { // leafletParams
-                opacity: 0.7
+                opacity: 1
             });
 
             var url = 'http://localhost:8080/geoserver/ign/wms';
             var lyrCommune = L.tileLayer.betterWms(url, {
                 layers: "ign:infos_map_view",
                 format: 'image/png',
-                opacity: 0.4,
+                opacity: 0.7,
                 info_format: 'application/json', // Return with JSON format
                 transparent: true
             });

@@ -75,10 +75,15 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                         popupAnchor: [0, -14]
                     })
                     for (var i = 0; i < markers.length; ++i) {
-                        L.marker([markers[i].lat, markers[i].lng], {icon: myIcon})
-                            .bindPopup('<a href="' + markers[i].url + '" target="_blank">' + markers[i].name + '</a>')
+                        console.log(markers[i].coordonnee_x, parseInt(markers[i].coordonnee_y));
+                        console.log(parseInt(markers[i].coordonnee_x), parseInt(markers[i].coordonnee_y));
+                        L.marker([parseInt(markers[i].coordonnee_x), parseInt(markers[i].coordonnee_y)], {icon: myIcon})
+                            .bindPopup('' + (markers[i].appariement !== null ? markers[i].appariement : '') + ' ' + (markers[i].appellation_officielle !== null ? markers[i].appellation_officielle : ''))
                             .addTo(map);
                     }
+                    L.marker([45.9750909, 5.3484205], {icon: myIcon})
+                        .bindPopup('aaaa')
+                        .addTo(map);
                 });
             },
             error: function (xhr, status, error) {
