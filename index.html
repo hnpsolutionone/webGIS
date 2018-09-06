@@ -60,22 +60,6 @@
                 transparent: true
             });*/
 
-            // Make makers by Json
-            /*var myIcon = L.icon({
-                iconUrl: 'images/pin24.png',
-                iconRetinaUrl: 'images/pin48.png',
-                iconSize: [29, 24],
-                iconAnchor: [9, 21],
-                popupAnchor: [0, -14]
-            })
-
-            for ( var i=0; i < markers.length; ++i )
-            {
-                L.marker( [markers[i].lat, markers[i].lng], {icon: myIcon} )
-                    .bindPopup( '<a href="' + markers[i].url + '" target="_blank">' + markers[i].name + '</a>' )
-                    .addTo( map );
-            }*/
-
             map.addLayer(lyrOSM);
             map.addLayer(lyrCommune);
             //map.addLayer(lyrChef);

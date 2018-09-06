@@ -63,7 +63,43 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 // Call Ajax to get data when user click on commune
                 var insee_com = feature.properties.insee_com;
                 console.log(insee_com);
+                /*
+                // This is way to show markers with ows of GeoServer
+                var geoJsonUrl = "http://localhost:8080/geoserver/ign/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ign:school-sql&maxFeatures=50&outputFormat=application/json&viewparams=param1:" + insee_com;
+                jQuery.ajax({
+                    url: geoJsonUrl,
+                    dataType: 'json',
+                    jsonpCallback: 'getJson',
+                    success: function (data, status, xhr) {
+                        // Way 1: Add map with default feature info
+                        console.log(data);
+                        geojson = L.geoJson(data, {}).addTo(map);
 
+                        // Way 2: create markers with custom feature info and add into map
+                        var myIcon = L.icon({
+                            iconUrl: 'images/pin48.png',
+                            iconRetinaUrl: 'images/pin48.png',
+                            iconSize: [29, 24],
+                            iconAnchor: [9, 21],
+                            popupAnchor: [0, -14]
+                        })
+                        for (var i = 0; i < data.features.length; i++) {
+                            var feature = data.features[i];
+                            var featureAttr = feature.properties;
+                            console.log(parseFloat(featureAttr.lat), parseFloat(featureAttr.long));
+                            var marker = L.marker([featureAttr.lat, featureAttr.long], {icon: myIcon})
+                                .bindPopup('' + (featureAttr.appariement !== null ? featureAttr.appariement : '') + ' ' + (featureAttr.appellation_officielle !== null ? featureAttr.appellation_officielle : ''))
+                                .addTo(map);
+                            console.log('==========mapMarkers===========');
+                            mapMarkers.push(marker);
+                            // console.log(mapMarkers);
+                        }
+                    }, error: function (xhr, status, error) {
+                        showResults(error);
+                    }
+                });*/
+
+                // This is way to show markers with REST API
                 jQuery.ajax({
                     method: "GET",
                     url: "php/getrecords_ajax.php",
