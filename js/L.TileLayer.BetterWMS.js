@@ -18,7 +18,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         // Make an AJAX request to the server and hope for the best
         var url = this.getFeatureInfoUrl(evt.latlng),
             showResults = L.Util.bind(this.showGetFeatureInfo, this);
-        $.ajax({
+        jQuery.ajax({
             url: url,
             success: function (data, status, xhr) {
                 console.log(data);
@@ -43,10 +43,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                     var jsonPollution = jsonQ(pollution);
                     console.log('==========json Pollution==========');
                     console.log(jsonPollution);
-
-                    content += "<tr><td>Area: " + jsonInfo.find('area').value() + " <br/>Insee code: " + jsonInfo.find('insee_code').value() + "</td>"
-                        + "<td>Title: " + jsonPopulation.find('title').value() + " <br/>Population: " + jsonPopulation.find('population').value() + "</td>"
-                        + "<td>Title: " + jsonPollution.find('title').value() + " <br/>Agriculture area: " + jsonPollution.find('agriculture_area').value() + "</td></tr>";
+                    content += "<tr><td>Area: " + (jQuery.isEmptyObject(jsonInfo) ? jsonInfo.find('area').value() : '') + " <br/>Insee code: " + (jQuery.isEmptyObject(jsonInfo) ? jsonInfo.find('insee_code').value() : '') + "</td>"
+                        + "<td>Title: " + (jQuery.isEmptyObject(jsonPopulation) ? jsonPopulation.find('title').value() : '') + " <br/>Population: " + (jQuery.isEmptyObject(jsonPopulation) ? jsonPopulation.find('population').value() : '') + "</td>"
+                        + "<td>Title: " + (jQuery.isEmptyObject(jsonPollution) ? jsonPollution.find('title').value() : '') + " <br/>Agriculture area: " + (jQuery.isEmptyObject(jsonPollution) ? jsonPollution.find('agriculture_area').value() : '') + "</td></tr>";
                 }
                 content += "<tbody></table>";
                 // $("#info").html(content);
@@ -57,9 +56,10 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                     showResults(err, evt.latlng, content);
 
                 // Call Ajax to get data when user click on commune
-                var insee_com = jsonInfo.find('insee_code').value();
+                var insee_com = feature.properties.insee_com;
+                console.log(insee_com);
 
-                $.ajax({
+                jQuery.ajax({
                     method: "GET",
                     url: "php/getrecords_ajax.php",
                     data: {"insee_com": insee_com},
@@ -74,16 +74,15 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                         iconAnchor: [9, 21],
                         popupAnchor: [0, -14]
                     })
-                    for (var i = 0; i < markers.length; ++i) {
-                        console.log(markers[i].coordonnee_x, parseInt(markers[i].coordonnee_y));
-                        console.log(parseInt(markers[i].coordonnee_x), parseInt(markers[i].coordonnee_y));
-                        L.marker([parseInt(markers[i].coordonnee_x), parseInt(markers[i].coordonnee_y)], {icon: myIcon})
-                            .bindPopup('' + (markers[i].appariement !== null ? markers[i].appariement : '') + ' ' + (markers[i].appellation_officielle !== null ? markers[i].appellation_officielle : ''))
-                            .addTo(map);
+
+                    if (markers.length) {
+                        for (var i = 0; i < markers.length; ++i) {
+                            console.log(parseFloat(markers[i].lat), parseFloat(markers[i].long));
+                            L.marker([parseFloat(markers[i].lat), parseFloat(markers[i].long)], {icon: myIcon})
+                                .bindPopup('' + (markers[i].appariement !== null ? markers[i].appariement : '') + ' ' + (markers[i].appellation_officielle !== null ? markers[i].appellation_officielle : ''))
+                                .addTo(map);
+                        }
                     }
-                    L.marker([45.9750909, 5.3484205], {icon: myIcon})
-                        .bindPopup('aaaa')
-                        .addTo(map);
                 });
             },
             error: function (xhr, status, error) {
