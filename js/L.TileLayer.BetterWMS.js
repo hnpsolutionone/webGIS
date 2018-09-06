@@ -1,9 +1,10 @@
 L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
-
+    mapMarkers: [],
     onAdd: function (map) {
         // Triggered when the layer is added to a map.
         //   Register a click listener, then do all the upstream WMS things
         L.TileLayer.WMS.prototype.onAdd.call(this, map);
+        console.log(this.mapMarkers);
         map.on('click', this.getFeatureInfo, this);
     },
 
@@ -18,10 +19,14 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         // Make an AJAX request to the server and hope for the best
         var url = this.getFeatureInfoUrl(evt.latlng),
             showResults = L.Util.bind(this.showGetFeatureInfo, this);
+        console.log('aaaaaaaaaaaaaaaaaaaaaa');
+        console.log(this.mapMarkers);
+        var mapMarkers = this.mapMarkers;
         jQuery.ajax({
             url: url,
             success: function (data, status, xhr) {
-                console.log(data);
+                console.log('11111');
+                console.log(mapMarkers);
                 var content = "<table>";
                 content += "<thead><tr><th>Information</th><th>Population</th><th>Pollution</th></tr></thead>";
                 content += "<tbody>";
@@ -64,7 +69,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                     url: "php/getrecords_ajax.php",
                     data: {"insee_com": insee_com},
                 }).done(function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var markers = jQuery.parseJSON(data);
                     console.log(markers);
                     var myIcon = L.icon({
@@ -75,12 +80,24 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                         popupAnchor: [0, -14]
                     })
 
+                    console.log('==========clear Markers====================');
+                    console.log(jQuery.isEmptyObject(mapMarkers));
+                    console.log(mapMarkers);
+                    if (!jQuery.isEmptyObject(mapMarkers)) {
+                        for(var i = 0; i < mapMarkers.length; i++){
+                            map.removeLayer(mapMarkers[i]);
+                        }
+                    }
+
                     if (markers.length) {
                         for (var i = 0; i < markers.length; ++i) {
                             console.log(parseFloat(markers[i].lat), parseFloat(markers[i].long));
-                            L.marker([parseFloat(markers[i].lat), parseFloat(markers[i].long)], {icon: myIcon})
+                            var marker = L.marker([parseFloat(markers[i].lat), parseFloat(markers[i].long)], {icon: myIcon})
                                 .bindPopup('' + (markers[i].appariement !== null ? markers[i].appariement : '') + ' ' + (markers[i].appellation_officielle !== null ? markers[i].appellation_officielle : ''))
                                 .addTo(map);
+                            console.log('==========mapMarkers===========');
+                            mapMarkers.push(marker);
+                            // console.log(mapMarkers);
                         }
                     }
                 });
