@@ -38,21 +38,22 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                     var info = jQuery.parseJSON(featureAttr["info"]);
 
                     var jsonInfo = jsonQ(info);
-                    //console.log('==========json Info=========');
-                    //console.log(jsonInfo);
+                    console.log('==========json Info=========');
+                    console.log(info);
 
                     var population = jQuery.parseJSON(featureAttr["detail_population"]);
                     var jsonPopulation = jsonQ(population);
-                    //console.log('=========json Population==========');
-                    //console.log(jsonPopulation);
+                    console.log('=========json Population==========');
+                    console.log(population);
 
                     var pollution = jQuery.parseJSON(featureAttr["detail_pollution"]);
                     var jsonPollution = jsonQ(pollution);
-                    //console.log('==========json Pollution==========');
-                    //console.log(jsonPollution);
-                    content += "<tr><td>Area: " + (jQuery.isEmptyObject(jsonInfo) ? jsonInfo.find('area').value() : '') + " <br/>Insee code: " + (jQuery.isEmptyObject(jsonInfo) ? jsonInfo.find('insee_code').value() : '') + "</td>"
-                        + "<td>Title: " + (jQuery.isEmptyObject(jsonPopulation) ? jsonPopulation.find('title').value() : '') + " <br/>Population: " + (jQuery.isEmptyObject(jsonPopulation) ? jsonPopulation.find('population').value() : '') + "</td>"
-                        + "<td>Title: " + (jQuery.isEmptyObject(jsonPollution) ? jsonPollution.find('title').value() : '') + " <br/>Agriculture area: " + (jQuery.isEmptyObject(jsonPollution) ? jsonPollution.find('agriculture_area').value() : '') + "</td></tr>";
+                    console.log('==========json Pollution==========');
+                    console.log(pollution);
+
+                    content += "<tr><td>Area: " + (jQuery.isEmptyObject(info) ? '' : jsonInfo.find('area').value()) + " <br/>Insee code: " + (jQuery.isEmptyObject(info) ? '' : jsonInfo.find('insee_code').value()) + "</td>"
+                        + "<td>Title: " + (jQuery.isEmptyObject(population) ? '' : jsonPopulation.find('title').value()) + " <br/>Population: " + (jQuery.isEmptyObject(population) ? '' : jsonPopulation.find('population').value()) + "</td>"
+                        + "<td>Title: " + (jQuery.isEmptyObject(pollution) ? '' : jsonPollution.find('title').value()) + " <br/>Agriculture area: " + (jQuery.isEmptyObject(pollution) ? '' : jsonPollution.find('agriculture_area').value()) + "</td></tr>";
                 }
                 content += "<tbody></table>";
                 // $("#info").html(content);
@@ -72,7 +73,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 if (!jQuery.isEmptyObject(filterLayer)) {
                     for(var i = 0; i < filterLayer.length; i++){
                         map.removeLayer(filterLayer[i]);
+                        filterLayer.pop();
                     }
+                    filterLayer.length = 0; // remove all item
                 }
 
                 if (insee_com !== null) {
@@ -85,10 +88,10 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                             CQL_FILTER:'insee_com=' + insee_com
                         });
                     map.addLayer(filterWMSLayer);
-                    console.log('==========FilterWMSlayer===========');
-                    console.log(filterWMSLayer);
+                    //console.log('==========FilterWMSlayer===========');
+                    //console.log(filterWMSLayer);
                     filterLayer.push(filterWMSLayer);
-                    console.log(filterLayer);
+                    //console.log(filterLayer);
                 }
 
                 ////////////////////////// CREATE MARKERS (REST API | SQL View by Layer/////////////////////
@@ -152,13 +155,14 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                         for(var i = 0; i < mapMarkers.length; i++){
                             map.removeLayer(mapMarkers[i]);
                         }
+                        mapMarkers.length = 0; // remove all item
                     }
 
                     if (markers.length) {
                         for (var i = 0; i < markers.length; ++i) {
                             //console.log(parseFloat(markers[i].lat), parseFloat(markers[i].long));
                             var marker = L.marker([parseFloat(markers[i].lat), parseFloat(markers[i].long)], {icon: myIcon})
-                                .bindPopup('' + (markers[i].appariement !== null ? markers[i].appariement : '') + ' ' + (markers[i].appellation_officielle !== null ? markers[i].appellation_officielle : ''))
+                                .bindPopup('<strong>School information:</strong> <br />' + (markers[i].appariement !== null ? 'Appariement:' + markers[i].appariement : '') + '<br />' + (markers[i].appellation_officielle !== null ? 'Appellation officielle:' + markers[i].appellation_officielle : ''))
                                 .addTo(map);
                             //console.log('==========mapMarkers===========');
                             mapMarkers.push(marker);
