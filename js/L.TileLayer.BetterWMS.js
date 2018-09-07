@@ -19,14 +19,14 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         // Make an AJAX request to the server and hope for the best
         var url = this.getFeatureInfoUrl(evt.latlng),
             showResults = L.Util.bind(this.showGetFeatureInfo, this);
-        console.log('aaaaaaaaaaaaaaaaaaaaaa');
-        console.log(this.mapMarkers);
+        //console.log('Init mapMarkers');
+        //console.log(this.mapMarkers);
         var mapMarkers = this.mapMarkers;
         jQuery.ajax({
             url: url,
             success: function (data, status, xhr) {
-                console.log('11111');
-                console.log(mapMarkers);
+                //console.log('Ajax success mapMarkers');
+                //console.log(mapMarkers);
                 var content = "<table>";
                 content += "<thead><tr><th>Information</th><th>Population</th><th>Pollution</th></tr></thead>";
                 content += "<tbody>";
@@ -36,18 +36,18 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                     var info = jQuery.parseJSON(featureAttr["info"]);
 
                     var jsonInfo = jsonQ(info);
-                    console.log('==========json Info=========');
-                    console.log(jsonInfo);
+                    //console.log('==========json Info=========');
+                    //console.log(jsonInfo);
 
                     var population = jQuery.parseJSON(featureAttr["detail_population"]);
                     var jsonPopulation = jsonQ(population);
-                    console.log('=========json Population==========');
-                    console.log(jsonPopulation);
+                    //console.log('=========json Population==========');
+                    //console.log(jsonPopulation);
 
                     var pollution = jQuery.parseJSON(featureAttr["detail_pollution"]);
                     var jsonPollution = jsonQ(pollution);
-                    console.log('==========json Pollution==========');
-                    console.log(jsonPollution);
+                    //console.log('==========json Pollution==========');
+                    //console.log(jsonPollution);
                     content += "<tr><td>Area: " + (jQuery.isEmptyObject(jsonInfo) ? jsonInfo.find('area').value() : '') + " <br/>Insee code: " + (jQuery.isEmptyObject(jsonInfo) ? jsonInfo.find('insee_code').value() : '') + "</td>"
                         + "<td>Title: " + (jQuery.isEmptyObject(jsonPopulation) ? jsonPopulation.find('title').value() : '') + " <br/>Population: " + (jQuery.isEmptyObject(jsonPopulation) ? jsonPopulation.find('population').value() : '') + "</td>"
                         + "<td>Title: " + (jQuery.isEmptyObject(jsonPollution) ? jsonPollution.find('title').value() : '') + " <br/>Agriculture area: " + (jQuery.isEmptyObject(jsonPollution) ? jsonPollution.find('agriculture_area').value() : '') + "</td></tr>";
@@ -63,6 +63,21 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 // Call Ajax to get data when user click on commune
                 var insee_com = feature.properties.insee_com;
                 console.log(insee_com);
+                
+                ////////////////////////// HIGHLIGHT SELECTED COMMUNE BY LOAD NEW LAYER WITH CQL_FILTER /////////////////////
+                if (insee_com !== null) {
+                    var FilterWMSlayer= L.tileLayer.wms("http://localhost:8080/geoserver/ign/wms",
+                        {
+                            layers: 'ign:infos_map_view',
+                            format: 'image/png',
+                            styles: 'restricted',
+                            transparent: true,
+                            CQL_FILTER:'insee_com=' + insee_com
+                        });
+                    map.addLayer(FilterWMSlayer);
+                }
+
+                ////////////////////////// CREATE MARKERS (REST API | SQL View by Layer/////////////////////
                 /*
                 // This is way to show markers with ows of GeoServer
                 var geoJsonUrl = "http://localhost:8080/geoserver/ign/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ign:school-sql&maxFeatures=50&outputFormat=application/json&viewparams=param1:" + insee_com;
@@ -107,7 +122,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 }).done(function (data) {
                     //console.log(data);
                     var markers = jQuery.parseJSON(data);
-                    console.log(markers);
+                    //console.log(markers);
                     var myIcon = L.icon({
                         iconUrl: 'images/pin24.png',
                         iconRetinaUrl: 'images/pin48.png',
@@ -116,9 +131,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                         popupAnchor: [0, -14]
                     })
 
-                    console.log('==========clear Markers====================');
-                    console.log(jQuery.isEmptyObject(mapMarkers));
-                    console.log(mapMarkers);
+                    //console.log('==========clear Markers====================');
+                    //console.log(jQuery.isEmptyObject(mapMarkers));
+                    //console.log(mapMarkers);
                     if (!jQuery.isEmptyObject(mapMarkers)) {
                         for(var i = 0; i < mapMarkers.length; i++){
                             map.removeLayer(mapMarkers[i]);
@@ -127,11 +142,11 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
 
                     if (markers.length) {
                         for (var i = 0; i < markers.length; ++i) {
-                            console.log(parseFloat(markers[i].lat), parseFloat(markers[i].long));
+                            //console.log(parseFloat(markers[i].lat), parseFloat(markers[i].long));
                             var marker = L.marker([parseFloat(markers[i].lat), parseFloat(markers[i].long)], {icon: myIcon})
                                 .bindPopup('' + (markers[i].appariement !== null ? markers[i].appariement : '') + ' ' + (markers[i].appellation_officielle !== null ? markers[i].appellation_officielle : ''))
                                 .addTo(map);
-                            console.log('==========mapMarkers===========');
+                            //console.log('==========mapMarkers===========');
                             mapMarkers.push(marker);
                             // console.log(mapMarkers);
                         }

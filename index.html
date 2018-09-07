@@ -47,22 +47,23 @@
             var lyrCommune = L.tileLayer.betterWms(url, {
                 layers: "ign:infos_map_view",
                 format: 'image/png',
-                opacity: 0.7,
+                opacity: 0.5,
                 info_format: 'application/json', // Return with JSON format
                 transparent: true
             });
 
-           /* var lyrChef = L.tileLayer.betterWms(url, {
-                layers: "ign:fr-chef_lieu",
-                format: 'image/png',
-                opacity: 0.5,
-                info_format: 'application/json', // Return with JSON format
-                transparent: true
-            });*/
-
+            /*var FilterWMSlayer= L.tileLayer.wms("http://localhost:8080/geoserver/ign/wms",
+                {
+                    layers: 'ign:infos_map_view',
+                    format: 'image/png',
+                    styles: 'restricted',
+                    transparent: true,
+                    CQL_FILTER:'insee_com=75056'
+                });
+            map.addLayer(FilterWMSlayer);*/
             map.addLayer(lyrOSM);
             map.addLayer(lyrCommune);
-            //map.addLayer(lyrChef);
+
 
             var layerSwitcher = L.geoportalControl.LayerSwitcher({
                 layers : [{
@@ -70,7 +71,7 @@
                     config : {
                         title : "OSM",
                         description : "Couche Open Street Maps"
-                    }
+                        }
                     },
                     {
                         layer : lyrCommune,
