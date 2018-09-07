@@ -1,5 +1,6 @@
 L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     mapMarkers: [],
+    filterLayer: [],
     onAdd: function (map) {
         // Triggered when the layer is added to a map.
         //   Register a click listener, then do all the upstream WMS things
@@ -22,6 +23,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         //console.log('Init mapMarkers');
         //console.log(this.mapMarkers);
         var mapMarkers = this.mapMarkers;
+        var filterLayer = this.filterLayer;
         jQuery.ajax({
             url: url,
             success: function (data, status, xhr) {
@@ -63,10 +65,18 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 // Call Ajax to get data when user click on commune
                 var insee_com = feature.properties.insee_com;
                 console.log(insee_com);
-                
-                ////////////////////////// HIGHLIGHT SELECTED COMMUNE BY LOAD NEW LAYER WITH CQL_FILTER /////////////////////
+
+                ////////////////////////// HIGHLIGHT SELECTED COMMUNE BY LOAD NEW LAYER WITH CQL_FILTER:'insee_com=insee_com' /////////////////////
+                console.log('========== Old Filter WMS layer===========');
+                console.log(filterLayer);
+                if (!jQuery.isEmptyObject(filterLayer)) {
+                    for(var i = 0; i < filterLayer.length; i++){
+                        map.removeLayer(filterLayer[i]);
+                    }
+                }
+
                 if (insee_com !== null) {
-                    var FilterWMSlayer= L.tileLayer.wms("http://localhost:8080/geoserver/ign/wms",
+                    var filterWMSLayer = L.tileLayer.wms("http://localhost:8080/geoserver/ign/wms",
                         {
                             layers: 'ign:infos_map_view',
                             format: 'image/png',
@@ -74,7 +84,11 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                             transparent: true,
                             CQL_FILTER:'insee_com=' + insee_com
                         });
-                    map.addLayer(FilterWMSlayer);
+                    map.addLayer(filterWMSLayer);
+                    console.log('==========FilterWMSlayer===========');
+                    console.log(filterWMSLayer);
+                    filterLayer.push(filterWMSLayer);
+                    console.log(filterLayer);
                 }
 
                 ////////////////////////// CREATE MARKERS (REST API | SQL View by Layer/////////////////////
