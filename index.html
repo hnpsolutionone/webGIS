@@ -11,8 +11,9 @@
     <script src="GpPluginLeaflet/GpPluginLeaflet.js"></script>
     <link rel="stylesheet" href="GpPluginLeaflet/GpPluginLeaflet.css" />
 
-    <!-- TileLayer BetterWMS -->
+    <!-- jQuery -->
     <script src="js/jquery-1.10.1.min.js"></script>
+    <!-- TileLayer BetterWMS -->
     <script src="js/L.TileLayer.BetterWMS.js"></script>
 
     <!-- jsonQ - http://ignitersworld.com/lab/jsonQ.html -->
@@ -55,6 +56,7 @@
             map.addLayer(lyrOSM);
             map.addLayer(lyrCommune);
 
+            // Layers switcher
             var layerSwitcher = L.geoportalControl.LayerSwitcher({
                 layers : [{
                     layer : lyrOSM,
@@ -73,6 +75,7 @@
             });
             map.addControl(layerSwitcher);
 
+            // Mouse position
             var mpCtrl = L.geoportalControl.MousePosition({});
             map.addControl(mpCtrl);
 

@@ -5,7 +5,6 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         // Triggered when the layer is added to a map.
         //   Register a click listener, then do all the upstream WMS things
         L.TileLayer.WMS.prototype.onAdd.call(this, map);
-        console.log(this.mapMarkers);
         map.on('click', this.getFeatureInfo, this);
     },
 
@@ -20,15 +19,12 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         // Make an AJAX request to the server and hope for the best
         var url = this.getFeatureInfoUrl(evt.latlng),
             showResults = L.Util.bind(this.showGetFeatureInfo, this);
-        //console.log('Init mapMarkers');
-        //console.log(this.mapMarkers);
         var mapMarkers = this.mapMarkers;
         var filterLayer = this.filterLayer;
+        var baseWMSUrl = this._url;
         jQuery.ajax({
             url: url,
             success: function (data, status, xhr) {
-                //console.log('Ajax success mapMarkers');
-                //console.log(mapMarkers);
                 var content = "<table>";
                 content += "<thead><tr><th>Information</th><th>Population</th><th>Pollution</th></tr></thead>";
                 content += "<tbody>";
@@ -68,8 +64,6 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 console.log(insee_com);
 
                 ////////////////////////// HIGHLIGHT SELECTED COMMUNE BY LOAD NEW LAYER WITH CQL_FILTER:'insee_com=insee_com' /////////////////////
-                console.log('========== Old Filter WMS layer===========');
-                console.log(filterLayer);
                 if (!jQuery.isEmptyObject(filterLayer)) {
                     for(var i = 0; i < filterLayer.length; i++){
                         map.removeLayer(filterLayer[i]);
@@ -79,7 +73,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 }
 
                 if (insee_com !== null) {
-                    var filterWMSLayer = L.tileLayer.wms("http://localhost:8080/geoserver/ign/wms",
+                    var filterWMSLayer = L.tileLayer.wms(baseWMSUrl,
                         {
                             layers: 'ign:infos_map_view',
                             format: 'image/png',
@@ -88,10 +82,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                             CQL_FILTER:'insee_com=' + insee_com
                         });
                     map.addLayer(filterWMSLayer);
-                    //console.log('==========FilterWMSlayer===========');
-                    //console.log(filterWMSLayer);
                     filterLayer.push(filterWMSLayer);
-                    //console.log(filterLayer);
                 }
 
                 ////////////////////////// CREATE MARKERS (REST API | SQL View by Layer/////////////////////
@@ -137,9 +128,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                     url: "php/getrecords_ajax.php",
                     data: {"insee_com": insee_com},
                 }).done(function (data) {
-                    //console.log(data);
                     var markers = jQuery.parseJSON(data);
-                    //console.log(markers);
                     var myIcon = L.icon({
                         iconUrl: 'images/pin24.png',
                         iconRetinaUrl: 'images/pin48.png',
@@ -148,9 +137,6 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                         popupAnchor: [0, -14]
                     })
 
-                    //console.log('==========clear Markers====================');
-                    //console.log(jQuery.isEmptyObject(mapMarkers));
-                    //console.log(mapMarkers);
                     if (!jQuery.isEmptyObject(mapMarkers)) {
                         for(var i = 0; i < mapMarkers.length; i++){
                             map.removeLayer(mapMarkers[i]);
@@ -164,9 +150,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                             var marker = L.marker([parseFloat(markers[i].lat), parseFloat(markers[i].long)], {icon: myIcon})
                                 .bindPopup('<strong>School information:</strong> <br />' + (markers[i].appariement !== null ? 'Appariement:' + markers[i].appariement : '') + '<br />' + (markers[i].appellation_officielle !== null ? 'Appellation officielle:' + markers[i].appellation_officielle : ''))
                                 .addTo(map);
-                            //console.log('==========mapMarkers===========');
                             mapMarkers.push(marker);
-                            // console.log(mapMarkers);
                         }
                     }
                 });
